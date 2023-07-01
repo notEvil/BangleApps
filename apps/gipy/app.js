@@ -6,7 +6,8 @@ let zoomed = true;
 let status;
 
 let interests_colors = [
-  0xffff, // Waypoints, white
+  // 0xffff, // Waypoints, white
+  0x0000, // Waypoints, black
   0xf800, // Bakery, red
   0x001f, // DrinkingWater, blue
   0x07ff, // Toilets, cyan
@@ -582,7 +583,7 @@ class Interests {
 
       let color = interests_colors[type];
       if (type == 0) {
-        g.setColor(0, 0, 0).fillCircle(final_x, final_y, 6);
+        g.setColor(1, 1, 1).fillCircle(final_x, final_y, 6);
       }
       g.setColor(color).fillCircle(final_x, final_y, 5);
     }
@@ -798,7 +799,8 @@ class Status {
           setTimeout(() => Bangle.buzz(), 1000);
           setTimeout(() => Bangle.buzz(), 1500);
           if (Bangle.isLocked()) {
-            Bangle.setLocked(false);
+            // Bangle.setLocked(false);
+            Bangle.setLCDPower(true);
           }
         }
       }
@@ -1069,12 +1071,12 @@ class Status {
       }
 
       // display current-segment's projection
-      g.setColor(0, 0, 0);
+      g.setColor(1, 1, 1);
       g.fillCircle(projected_x, projected_y, 4);
     }
 
     // now display ourselves
-    g.setColor(0, 0, 0);
+    g.setColor(1, 1, 1);
     g.fillCircle(half_width, half_height, 5);
   }
 }
@@ -1375,26 +1377,26 @@ function start_gipy(path, maps, interests) {
   }
   status.display();
 
-  Bangle.on("stroke", (o) => {
-    if (in_menu) {
-      return;
-    }
-    // we move display according to stroke
-    let first_x = o.xy[0];
-    let first_y = o.xy[1];
-    let last_x = o.xy[o.xy.length - 2];
-    let last_y = o.xy[o.xy.length - 1];
-    let xdiff = last_x - first_x;
-    let ydiff = last_y - first_y;
-
-    let c = status.adjusted_cos_direction;
-    let s = status.adjusted_sin_direction;
-    let rotated_x = xdiff * c - ydiff * s;
-    let rotated_y = xdiff * s + ydiff * c;
-    status.displayed_x += rotated_x / ((status.scale_factor * 4) / 3);
-    status.displayed_y -= rotated_y / ((status.scale_factor * 4) / 3);
-    status.display();
-  });
+  // Bangle.on("stroke", (o) => {
+  //   if (in_menu) {
+  //     return;
+  //   }
+  //   // we move display according to stroke
+  //   let first_x = o.xy[0];
+  //   let first_y = o.xy[1];
+  //   let last_x = o.xy[o.xy.length - 2];
+  //   let last_y = o.xy[o.xy.length - 1];
+  //   let xdiff = last_x - first_x;
+  //   let ydiff = last_y - first_y;
+  //
+  //   let c = status.adjusted_cos_direction;
+  //   let s = status.adjusted_sin_direction;
+  //   let rotated_x = xdiff * c - ydiff * s;
+  //   let rotated_y = xdiff * s + ydiff * c;
+  //   status.displayed_x += rotated_x / ((status.scale_factor * 4) / 3);
+  //   status.displayed_y -= rotated_y / ((status.scale_factor * 4) / 3);
+  //   status.display();
+  // });
 
   if (simulated) {
     status.starting_time = getTime();
@@ -1403,7 +1405,8 @@ function start_gipy(path, maps, interests) {
     Bangle.setLCDPower(1);
     setInterval(simulate_gps, 500, status);
   } else {
-    Bangle.setLocked(false);
+    // Bangle.setLocked(false);
+    Bangle.setLCDPower(true);
 
     let frame = 0;
     let set_coordinates = function (data) {
@@ -1435,8 +1438,10 @@ function start_gipy(path, maps, interests) {
 
     Bangle.setGPSPower(true, "gipy");
     Bangle.on("GPS", set_coordinates);
-    Bangle.on("lock", function (on) {
-      if (!on) {
+    // Bangle.on("lock", function (on) {
+    Bangle.on("lcdPower", function (on) {
+      // if (!on) {
+      if (on) {
         Bangle.setGPSPower(true, "gipy"); // activate gps when unlocking
       }
     });

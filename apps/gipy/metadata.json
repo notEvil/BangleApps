@@ -9,7 +9,7 @@
   "type": "app",
   "tags": "tool,outdoors,gps",
   "screenshots": [{"url":"splash.png"}],
-  "supports": ["BANGLEJS2"],
+  "supports": ["BANGLEJS"],
   "readme": "README.md",
   "interface": "interface.html",
   "storage": [
